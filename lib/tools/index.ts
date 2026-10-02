@@ -1,8 +1,12 @@
 import "server-only";
 import type Anthropic from "@anthropic-ai/sdk";
 import { updateEmployerList, updateEmployerListTool } from "@/lib/tools/updateEmployerList";
+import { findOpenRoles, findOpenRolesTool } from "@/lib/tools/findOpenRoles";
 
-export const TOOLS: Anthropic.Beta.BetaToolUnion[] = [updateEmployerListTool];
+export const TOOLS: Anthropic.Beta.BetaToolUnion[] = [
+  updateEmployerListTool,
+  findOpenRolesTool,
+];
 
 /** Context supplied by the server, never by the model. */
 export type ToolContext = { sessionId: string };
@@ -15,6 +19,8 @@ export async function runTool(
   switch (name) {
     case "update_employer_list":
       return updateEmployerList(ctx.sessionId, input);
+    case "find_open_roles":
+      return findOpenRoles(ctx.sessionId, input);
     default:
       throw new Error(`Unknown tool: ${name}`);
   }

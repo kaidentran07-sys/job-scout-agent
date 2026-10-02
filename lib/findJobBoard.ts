@@ -2,7 +2,7 @@ import "server-only";
 import { tavilySearch, type TavilyResult } from "@/lib/tavily";
 
 // Job aggregators and review sites: never the company's own board.
-const EXCLUDED_DOMAINS = [
+export const AGGREGATOR_DOMAINS = [
   "linkedin.com",
   "indeed.com",
   "glassdoor.com",
@@ -141,7 +141,7 @@ function scoreResult(rawUrl: string, tokens: string[]): Candidate | null {
   }
   if (url.protocol !== "https:" && url.protocol !== "http:") return null;
   const host = url.hostname.toLowerCase().replace(/^www\./, "");
-  if (EXCLUDED_DOMAINS.some((d) => host === d || host.endsWith(`.${d}`))) return null;
+  if (AGGREGATOR_DOMAINS.some((d) => host === d || host.endsWith(`.${d}`))) return null;
 
   // 1. A known ATS board whose slug is the company: the actual postings live here.
   const ats = ATS_HOSTS.find((a) => a.test(host));
@@ -193,7 +193,7 @@ export function pickJobBoard(company: string, results: TavilyResult[]): string |
 export async function findJobBoard(company: string): Promise<string | null> {
   const results = await tavilySearch(`${company} careers jobs official site`, {
     maxResults: 10,
-    excludeDomains: EXCLUDED_DOMAINS,
+    excludeDomains: AGGREGATOR_DOMAINS,
   });
   return pickJobBoard(company, results);
 }

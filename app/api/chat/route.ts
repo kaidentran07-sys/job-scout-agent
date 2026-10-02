@@ -5,7 +5,7 @@ import { TOOLS, runTool } from "@/lib/tools";
 export const maxDuration = 60;
 
 const DEFAULT_MODEL = "claude-sonnet-5-5";
-const MAX_TOKENS = 2000;
+const MAX_TOKENS = 4000;
 const MAX_ITERATIONS = 6;
 const MAX_HISTORY = 40; // most recent messages sent to the model
 const MAX_MESSAGE_CHARS = 8000;
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
         tools: TOOLS,
         messages,
         // Chat replies don't need deep reasoning; low effort also keeps
-        // thinking from eating into the 2000-token budget.
+        // thinking from eating into the max_tokens budget.
         output_config: { effort: "low" },
         // If a safety classifier declines, retry server-side on Anthropic's
         // recommended fallback model instead of returning the refusal.
